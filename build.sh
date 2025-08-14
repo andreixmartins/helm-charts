@@ -16,7 +16,8 @@ mv .publish/* .
 rsync -a .publish/ . 
 rm -rf .publish
 
-git add index.yaml *.tgz .nojekyll
+# git add index.yaml *.tgz .nojekyll
+git add .
 
 git commit -m "Publish Helm repo"
 
