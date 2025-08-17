@@ -56,6 +56,36 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8282
 
+metrics:
+  enabled: true
+  path: /actuator/prometheus   # Spring Boot Actuator endpoint
+  port: 8282                   # same as app port (or 9090 if you separate mgmt port)
+  serviceMonitor:
+    enabled: true
+    namespace: monitoring      # where your Prometheus Operator runs
+    interval: 15s
+    scrapeTimeout: 10s
+    labels:
+      release: kube-prometheus-stack  # match your operator's release label
+    # if your Service uses a named port:
+    targetPortName: http
+    # optional:
+    scheme: http
+    relabelings: []
+    metricRelabelings: []
+
+env:                            # Spring Boot toggles via env (overrides application.properties)
+  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+    value: "health,info,prometheus"
+  - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+    value: "true"
+  - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+    value: "true"
+  - name: MANAGEMENT_SERVER_PORT
+    value: "8282"              # or "9090" if you want a separate mgmt port
+  - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
+    value: "/actuator"
+
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:
   enabled: false
