@@ -71,6 +71,9 @@ metrics:
       release: kube-prometheus-stack  # match your operator's release label
     # if your Service uses a named port:
     targetPortName: http
+    namespaceSelector:
+      matchNames:
+        - app    
     # optional:
     scheme: http
     relabelings: []
