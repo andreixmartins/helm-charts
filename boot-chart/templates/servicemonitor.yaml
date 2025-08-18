@@ -1,4 +1,21 @@
-{{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled }}
+{{- /*
+  templates/servicemonitor.yaml
+  Renders a ServiceMonitor using safe defaults and Helm values.
+*/ -}}
+{{- $metrics := .Values.metrics | default dict -}}
+{{- $sm := $metrics.serviceMonitor | default dict -}}
+{{- if and ($metrics.enabled | default false) ($sm.enabled | default false) }}
+
+{{- /* Validate & normalize scheme */ -}}
+{{- $scheme := (default "http" $metrics.scheme) | lower -}}
+{{- if not (or (eq $scheme "http") (eq $scheme "https")) -}}
+{{- fail (printf "metrics.scheme must be 'http' or 'https', got %q" $scheme) -}}
+{{- end -}}
+
+{{- /* Namespace selector (default to release namespace) */ -}}
+{{- $nsSel := (default (dict) $sm.namespaceSelector) -}}
+{{- $match := (default (list .Release.Namespace) (index $nsSel "matchNames")) -}}
+
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -6,7 +23,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "boot-chart.labels" . | nindent 4 }}
-    {{- with .Values.metrics.serviceMonitor.additionalLabels }}
+    {{- with $sm.additionalLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
@@ -14,17 +31,23 @@ spec:
     matchLabels:
       {{- include "boot-chart.labels" . | nindent 6 }}
 
-  {{/* Default to the release namespace if none provided */}}
-  {{- $nsSel := (default (dict) .Values.metrics.serviceMonitor.namespaceSelector) -}}
-  {{- $match := (default (list .Release.Namespace) (index $nsSel "matchNames")) -}}
   namespaceSelector:
     matchNames:
       {{- toYaml $match | nindent 6 }}
 
   endpoints:
-    - port: {{ .Values.service.portName }}
-      path: {{ .Values.metrics.path }}
-      scheme: {{ .Values.metrics.scheme | default "HTTP" }}
-      interval: {{ .Values.metrics.serviceMonitor.interval | default "15s" }}
-      scrapeTimeout: {{ .Values.metrics.serviceMonitor.scrapeTimeout | default "10s" }}
+    - port: {{ default "http" .Values.service.portName }}
+      path: {{ default "/actuator/prometheus" $metrics.path }}
+      scheme: {{ $scheme }}
+      interval: {{ default "15s" $sm.interval }}
+      scrapeTimeout: {{ default "10s" $sm.scrapeTimeout }}
+      honorLabels: {{ default false $sm.honorLabels }}
+      {{- with $sm.metricRelabelings }}
+      metricRelabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $sm.relabelings }}
+      relabelings:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

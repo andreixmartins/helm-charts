@@ -68,6 +68,8 @@ metrics:
     namespace: infra      # where your Prometheus Operator runs
     interval: 15s
     scrapeTimeout: 10s
+    additionalLabels:
+      release: kube-prometheus-stack     
     labels:
       release: kube-prometheus-stack  # match your operator's release label
     # if your Service uses a named port:
