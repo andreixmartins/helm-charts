@@ -13,26 +13,18 @@ spec:
   selector:
     matchLabels:
       {{- include "boot-chart.labels" . | nindent 6 }}
+
+  {{/* Default to the release namespace if none provided */}}
+  {{- $nsSel := (default (dict) .Values.metrics.serviceMonitor.namespaceSelector) -}}
+  {{- $match := (default (list .Release.Namespace) (index $nsSel "matchNames")) -}}
   namespaceSelector:
-    {{- if .Values.metrics.serviceMonitor.namespaceSelector.matchNames }}
     matchNames:
-      {{- toYaml .Values.metrics.serviceMonitor.namespaceSelector.matchNames | nindent 6 }}
-    {{- else }}
-    matchNames: [{{ .Release.Namespace | quote }}]
-    {{- end }}
+      {{- toYaml $match | nindent 6 }}
+
   endpoints:
-    - port: {{ .Values.service.portName }}         # must match Service port name
+    - port: {{ .Values.service.portName }}
       path: {{ .Values.metrics.path }}
       scheme: {{ .Values.metrics.scheme | default "HTTP" }}
-      interval: {{ .Values.metrics.serviceMonitor.interval }}
-      scrapeTimeout: {{ .Values.metrics.serviceMonitor.scrapeTimeout }}
-      honorLabels: {{ .Values.metrics.serviceMonitor.honorLabels | default false }}
-      {{- with .Values.metrics.serviceMonitor.metricRelabelings }}
-      metricRelabelings:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.metrics.serviceMonitor.relabelings }}
-      relabelings:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      interval: {{ .Values.metrics.serviceMonitor.interval | default "15s" }}
+      scrapeTimeout: {{ .Values.metrics.serviceMonitor.scrapeTimeout | default "10s" }}
 {{- end }}
