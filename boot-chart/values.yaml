@@ -60,6 +60,7 @@ service:
 
 metrics:
   enabled: true
+  scheme: http
   path: /actuator/prometheus   # Spring Boot Actuator endpoint
   port: 8282                   # same as app port (or 9090 if you separate mgmt port)
   serviceMonitor:
