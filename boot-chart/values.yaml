@@ -49,13 +49,14 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
 service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+  enabled: true
   type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8282
-
+  targetPort: 8282
+  portName: http           # name matters for ServiceMonitor
+  annotations: {}          # if NOT using Prometheus Operator, you can set scrape annotations here
+  labels: {}
 
 metrics:
   enabled: true

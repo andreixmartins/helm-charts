@@ -1,15 +1,31 @@
+{{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "boot-chart.fullname" . }}
   labels:
     {{- include "boot-chart.labels" . | nindent 4 }}
+    {{- with .Values.service.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.metrics.useAnnotations .Values.service.annotations }}
+  annotations:
+    {{- if .Values.metrics.useAnnotations }}
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "{{ .Values.service.port }}"
+    prometheus.io/path: "{{ .Values.metrics.path }}"
+    prometheus.io/scheme: "{{ .Values.metrics.scheme | default "HTTP" }}"
+    {{- end }}
+    {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
+    - name: {{ .Values.service.portName }}
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
   selector:
-    {{- include "boot-chart.selectorLabels" . | nindent 4 }}
+    {{- include "boot-chart.labels" . | nindent 4 }}
+{{- end }}
