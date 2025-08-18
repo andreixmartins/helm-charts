@@ -56,13 +56,14 @@ service:
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 8282
 
+
 metrics:
   enabled: true
   path: /actuator/prometheus   # Spring Boot Actuator endpoint
   port: 8282                   # same as app port (or 9090 if you separate mgmt port)
   serviceMonitor:
     enabled: true
-    namespace: monitoring      # where your Prometheus Operator runs
+    namespace: infra      # where your Prometheus Operator runs
     interval: 15s
     scrapeTimeout: 10s
     labels:
