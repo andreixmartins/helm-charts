@@ -9,7 +9,7 @@ replicaCount: 1
 image:
   repository: axsoftware/boot-chart
   # This sets the pull policy for images.
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -82,17 +82,17 @@ metrics:
     relabelings: []
     metricRelabelings: []
 
-env:                            # Spring Boot toggles via env (overrides application.properties)
-  - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
-    value: "health,info,prometheus"
-  - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
-    value: "true"
-  - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
-    value: "true"
-  - name: MANAGEMENT_SERVER_PORT
-    value: "8282"              # or "9090" if you want a separate mgmt port
-  - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
-    value: "/actuator"
+# env:                            # Spring Boot toggles via env (overrides application.properties)
+#   - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+#     value: "health,info,prometheus"
+#   - name: MANAGEMENT_METRICS_EXPORT_PROMETHEUS_ENABLED
+#     value: "true"
+#   - name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED
+#     value: "true"
+#   - name: MANAGEMENT_SERVER_PORT
+#     value: "8282"              # or "9090" if you want a separate mgmt port
+#   - name: MANAGEMENT_ENDPOINTS_WEB_BASE_PATH
+#     value: "/actuator"
 
 # This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
 ingress:

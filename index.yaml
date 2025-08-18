@@ -2,13 +2,13 @@ apiVersion: v1
 entries:
   boot-chart:
   - apiVersion: v2
-    appVersion: 1.0.6
-    created: "2025-08-18T00:08:53.893075-04:00"
+    appVersion: 1.0.7
+    created: "2025-08-18T10:33:54.92182-04:00"
     description: A Helm chart for Kubernetes
-    digest: f6ee7c603db9965a33b22d40b58cf25988ca33bf04883779a1e724e322470855
+    digest: 874826cd498d8b5847dae81ec9b85df07e24e6dbed751db43665ced8d83242ba
     name: boot-chart
     type: application
     urls:
-    - https://andreixmartins.github.io/helm-charts/boot-chart-1.0.6.tgz
-    version: 1.0.6
-generated: "2025-08-18T00:08:53.891877-04:00"
+    - https://andreixmartins.github.io/helm-charts/boot-chart-1.0.7.tgz
+    version: 1.0.7
+generated: "2025-08-18T10:33:54.920647-04:00"
